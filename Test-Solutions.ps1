@@ -1,6 +1,8 @@
 $ProjectRoot = $PSScriptRoot
 
-$Programs = @()
+$Programs =
+    @{"name" = "day01_trebuchet_part1"; "output" = "Hello, world!"},
+    @{"name" = "day01_trebuchet_part1"; "output" = "Hello, world!"}
 
 for ($i = 0; $i -lt $Programs.Length; $i++) {
     $program = $Programs[$i]
@@ -14,6 +16,18 @@ for ($i = 0; $i -lt $Programs.Length; $i++) {
 
     Push-Location (Join-Path $ProjectRoot $name)
     Write-Host "`u{1F9F1} Building $name"
+    & cargo fmt --all -- --check
+    if (-not $?) {
+        throw "Error running cargo fmt for $name"
+    }
+    & cargo clippy --all-targets --all-features -- -D warnings
+    if (-not $?) {
+        throw "Error running cargo clippy for $name"
+    }
+    & cargo check
+    if (-not $?) {
+        throw "Error running cargo check for $name"
+    }
     & cargo build --release
     if (-not $?) {
         throw "Error building $name"
