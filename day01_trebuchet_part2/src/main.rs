@@ -2,7 +2,7 @@
 use day01_trebuchet_common::{REAL_DATA, SAMPLE_DATA_2};
 
 fn main() {
-    let result = do_work(SAMPLE_DATA_2);
+    let result = do_work(REAL_DATA);
     println!("{}", result);
 }
 
