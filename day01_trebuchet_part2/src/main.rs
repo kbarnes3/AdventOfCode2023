@@ -21,24 +21,114 @@ struct Number {
 }
 
 const ALLOWED_NUMBERS: [Number; 18] = [
-    { Number {text: "one", value: 1} },
-    { Number {text: "1", value: 1} },
-    { Number {text: "two", value: 2} },
-    { Number {text: "2", value: 2} },
-    { Number {text: "three", value: 3} },
-    { Number {text: "3", value: 3} },
-    { Number {text: "four", value: 4} },
-    { Number {text: "4", value: 4} },
-    { Number {text: "five", value: 5} },
-    { Number {text: "5", value: 5} },
-    { Number {text: "six", value: 6} },
-    { Number {text: "6", value: 6} },
-    { Number {text: "seven", value: 7} },
-    { Number {text: "7", value: 7} },
-    { Number {text: "eight", value: 8} },
-    { Number {text: "8", value: 8} },
-    { Number {text: "nine", value: 9} },
-    { Number {text: "9", value: 9} },
+    {
+        Number {
+            text: "one",
+            value: 1,
+        }
+    },
+    {
+        Number {
+            text: "1",
+            value: 1,
+        }
+    },
+    {
+        Number {
+            text: "two",
+            value: 2,
+        }
+    },
+    {
+        Number {
+            text: "2",
+            value: 2,
+        }
+    },
+    {
+        Number {
+            text: "three",
+            value: 3,
+        }
+    },
+    {
+        Number {
+            text: "3",
+            value: 3,
+        }
+    },
+    {
+        Number {
+            text: "four",
+            value: 4,
+        }
+    },
+    {
+        Number {
+            text: "4",
+            value: 4,
+        }
+    },
+    {
+        Number {
+            text: "five",
+            value: 5,
+        }
+    },
+    {
+        Number {
+            text: "5",
+            value: 5,
+        }
+    },
+    {
+        Number {
+            text: "six",
+            value: 6,
+        }
+    },
+    {
+        Number {
+            text: "6",
+            value: 6,
+        }
+    },
+    {
+        Number {
+            text: "seven",
+            value: 7,
+        }
+    },
+    {
+        Number {
+            text: "7",
+            value: 7,
+        }
+    },
+    {
+        Number {
+            text: "eight",
+            value: 8,
+        }
+    },
+    {
+        Number {
+            text: "8",
+            value: 8,
+        }
+    },
+    {
+        Number {
+            text: "nine",
+            value: 9,
+        }
+    },
+    {
+        Number {
+            text: "9",
+            value: 9,
+        }
+    },
 ];
 
 fn get_number_from_line(line: &str) -> u64 {
@@ -72,7 +162,6 @@ fn get_number_from_line(line: &str) -> u64 {
             }
         }
     }
-
 
     first_number.unwrap() * 10 + last_number.unwrap()
 }

@@ -2,7 +2,7 @@ $ProjectRoot = $PSScriptRoot
 
 $Programs =
     @{"name" = "day01_trebuchet_part1"; "output" = "54632"},
-    @{"name" = "day01_trebuchet_part1"; "output" = "54632"}
+    @{"name" = "day01_trebuchet_part2"; "output" = "54019"}
 
 for ($i = 0; $i -lt $Programs.Length; $i++) {
     $program = $Programs[$i]
