@@ -18,7 +18,7 @@ struct StructuredGameResults {
     pulls: Vec<Pull>,
 }
 
-fn do_work<const N:usize>(data: [GameResults; N]) -> u64 {
+fn do_work<const N: usize>(data: [GameResults; N]) -> u64 {
     let structured_data = make_structured_results(data);
     let max_pull: Pull = Pull {
         red: 12,
@@ -56,7 +56,7 @@ fn make_structured_result(data: &GameResults) -> StructuredGameResults {
         let mut blue: u64 = 0;
 
         let color_strings: Vec<&str> = pull_string.split(", ").collect();
-        
+
         for color_string in color_strings {
             let parts: Vec<&str> = color_string.split(' ').collect();
             if parts.len() != 2 {
@@ -72,40 +72,32 @@ fn make_structured_result(data: &GameResults) -> StructuredGameResults {
                         panic!("Duplicate red: {}", color_string);
                     }
                     red = number
-                },
+                }
                 "green" => {
                     if green != 0 {
                         panic!("Duplicate green: {}", color_string);
                     }
                     green = number
-                },
+                }
                 "blue" => {
                     if blue != 0 {
                         panic!("Duplicate blue: {}", color_string);
                     }
                     blue = number
-                },
+                }
                 _ => panic!("Invalid color: {}", color),
             }
         }
 
-        pulls.push(Pull {
-            red: red,
-            green: green,
-            blue: blue,
-        });
+        pulls.push(Pull { red, green, blue });
     }
 
-    StructuredGameResults {
-        id: data.id,
-        pulls: pulls
-    }
+    StructuredGameResults { id: data.id, pulls }
 }
 
-fn make_structured_results<const N:usize>(data: [GameResults; N]) -> [StructuredGameResults; N] {
-    let structured_results: [StructuredGameResults; N] = array_init(|i| {
-        make_structured_result(&data[i])
-    });
+fn make_structured_results<const N: usize>(data: [GameResults; N]) -> [StructuredGameResults; N] {
+    let structured_results: [StructuredGameResults; N] =
+        array_init(|i| make_structured_result(&data[i]));
 
     structured_results
 }
