@@ -1,7 +1,8 @@
-use day01_trebuchet_common::SAMPLE_DATA;
+#[allow(unused_imports)]
+use day01_trebuchet_common::{REAL_DATA, SAMPLE_DATA};
 
 fn main() {
-    let result = do_work(SAMPLE_DATA);
+    let result = do_work(REAL_DATA);
     println!("{}", result);
 }
 
@@ -15,9 +16,19 @@ fn do_work<const N: usize>(data: [&str; N]) -> u64 {
 }
 
 fn get_number_from_line(line: &str) -> u64 {
-    let first_number: u64 = 
-        line.chars().into_iter().find(|c| c.is_numeric()).unwrap_or('0').to_digit(10).unwrap_or(0) as u64;
-    let last_number: u64 = line.chars().rev().find(|c| c.is_numeric()).unwrap_or('0').to_digit(10).unwrap_or(0) as u64;
+    let first_number: u64 = line
+        .chars()
+        .find(|c| c.is_numeric())
+        .unwrap_or('0')
+        .to_digit(10)
+        .unwrap_or(0) as u64;
+    let last_number: u64 = line
+        .chars()
+        .rev()
+        .find(|c| c.is_numeric())
+        .unwrap_or('0')
+        .to_digit(10)
+        .unwrap_or(0) as u64;
 
     first_number * 10 + last_number
 }
