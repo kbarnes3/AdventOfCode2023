@@ -1,9 +1,9 @@
 use array_init::array_init;
 #[allow(unused_imports)]
-use day02_cube_conundrum_common::{GameResults, SAMPLE_DATA};
+use day02_cube_conundrum_common::{GameResults, REAL_DATA, SAMPLE_DATA};
 
 fn main() {
-    let result = do_work(SAMPLE_DATA);
+    let result = do_work(REAL_DATA);
     println!("{}", result);
 }
 
