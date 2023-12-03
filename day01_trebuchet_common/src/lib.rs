@@ -1,5 +1,16 @@
 pub const SAMPLE_DATA: [&str; 4] = ["1abc2", "pqr3stu8vwx", "a1b2c3d4e5f", "treb7uchet"];
 
+pub const SAMPLE_DATA_2: [&str; 7] = 
+[
+    "two1nine",
+    "eightwothree",
+    "abcone2threexyz",
+    "xtwone3four",
+    "4nineeightseven2",
+    "zoneight234",
+    "7pqrstsixteen",
+];
+
 pub const REAL_DATA: [&str; 1000] = [
     "sdpgz3five4seven6fiveh",
     "876mbxbrntsfm",
