@@ -19,16 +19,16 @@ fn get_number_from_line(line: &str) -> u64 {
     let first_number: u64 = line
         .chars()
         .find(|c| c.is_numeric())
-        .unwrap_or('0')
+        .unwrap()
         .to_digit(10)
-        .unwrap_or(0) as u64;
+        .unwrap() as u64;
     let last_number: u64 = line
         .chars()
         .rev()
         .find(|c| c.is_numeric())
-        .unwrap_or('0')
+        .unwrap()
         .to_digit(10)
-        .unwrap_or(0) as u64;
+        .unwrap() as u64;
 
     first_number * 10 + last_number
 }
