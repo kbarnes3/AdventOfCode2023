@@ -45,7 +45,7 @@ fn parse_schematic<const X: usize, const Y: usize>(data: [[char; Y]; X]) -> Sche
         let mut part_number = 0;
         let mut in_part_number = false;
         for (col_number, value) in row.iter().enumerate() {
-            if value.is_digit(10) {
+            if value.is_ascii_digit() {
                 if !in_part_number {
                     start_col = Some(col_number);
                     in_part_number = true;
@@ -53,8 +53,7 @@ fn parse_schematic<const X: usize, const Y: usize>(data: [[char; Y]; X]) -> Sche
                 end_col = Some(col_number);
                 part_number *= 10;
                 part_number += value.to_digit(10).unwrap() as u64;
-            }
-            else {
+            } else {
                 if in_part_number {
                     part_numbers.push(PartNumber {
                         part_number,
@@ -92,42 +91,41 @@ fn parse_schematic<const X: usize, const Y: usize>(data: [[char; Y]; X]) -> Sche
     }
 }
 
-fn is_part_number_valid(part_number: &PartNumber, symbols: &Vec<Symbol>, row_count: usize, col_count: usize) -> bool {
-    let min_row: usize;
-    let max_row: usize;
-    let min_col: usize;
-    let max_col: usize;
+fn is_part_number_valid(
+    part_number: &PartNumber,
+    symbols: &Vec<Symbol>,
+    row_count: usize,
+    col_count: usize,
+) -> bool {
+    let min_row: usize = if part_number.row == 0 {
+        0
+    } else {
+        part_number.row - 1
+    };
 
-    if part_number.row == 0 {
-        min_row = 0;
-    }
-    else {
-        min_row = part_number.row - 1;
-    }
+    let max_row: usize = if part_number.row == row_count - 1 {
+        part_number.row
+    } else {
+        part_number.row + 1
+    };
+    let min_col: usize = if part_number.start_col == 0 {
+        0
+    } else {
+        part_number.start_col - 1
+    };
 
-    if part_number.row == row_count - 1 {
-        max_row = part_number.row
-    }
-    else {
-        max_row = part_number.row + 1;
-    }
-
-    if part_number.start_col == 0 {
-        min_col = 0;
-    }
-    else {
-        min_col = part_number.start_col - 1;
-    }
-
-    if part_number.end_col == col_count - 1 {
-        max_col = part_number.end_col;
-    }
-    else {
-        max_col = part_number.end_col + 1;
-    }
+    let max_col: usize = if part_number.end_col == col_count - 1 {
+        part_number.end_col
+    } else {
+        part_number.end_col + 1
+    };
 
     for symbol in symbols {
-        if symbol.row >= min_row && symbol.row <= max_row && symbol.col >= min_col && symbol.col <= max_col {
+        if symbol.row >= min_row
+            && symbol.row <= max_row
+            && symbol.col >= min_col
+            && symbol.col <= max_col
+        {
             return true;
         }
     }
