@@ -5,7 +5,7 @@ $Programs =
     @{"name" = "day01_trebuchet_part2"; "output" = "54019"},
     @{"name" = "day02_cube_conundrum_part1"; "output" = "2879"},
     @{"name" = "day02_cube_conundrum_part2"; "output" = "65122"},
-    @{"name" = "day03_gear_ratios_part1"; "output" = "4361"}
+    @{"name" = "day03_gear_ratios_part1"; "output" = "540131"}
 
 for ($i = 0; $i -lt $Programs.Length; $i++) {
     $program = $Programs[$i]
