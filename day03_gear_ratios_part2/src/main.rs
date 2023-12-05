@@ -14,6 +14,7 @@ struct PartNumber {
 }
 
 struct Symbol {
+    is_potential_gear: bool,
     row: usize,
     col: usize,
 }
@@ -26,9 +27,14 @@ struct Schematic {
 fn do_work<const X: usize, const Y: usize>(data: [[char; Y]; X]) -> u64 {
     let schematic: Schematic = parse_schematic(data);
     let mut result: u64 = 0;
-    for part_number in schematic.part_numbers {
-        if is_part_number_valid(&part_number, &schematic.symbols, X, Y) {
-            result += part_number.part_number;
+
+    for symbol in schematic.symbols {
+        if symbol.is_potential_gear {
+            let gear_part_numbers = get_gear_part_numbers(&symbol, &schematic.part_numbers, X, Y);
+            if gear_part_numbers.is_some() {
+                let (first_part_number, second_part_number) = gear_part_numbers.unwrap();
+                result += first_part_number.part_number * second_part_number.part_number;
+            }
         }
     }
 
@@ -69,6 +75,7 @@ fn parse_schematic<const X: usize, const Y: usize>(data: [[char; Y]; X]) -> Sche
 
                 if *value != '.' {
                     symbols.push(Symbol {
+                        is_potential_gear: *value == '*',
                         row: row_number,
                         col: col_number,
                     });
@@ -91,44 +98,55 @@ fn parse_schematic<const X: usize, const Y: usize>(data: [[char; Y]; X]) -> Sche
     }
 }
 
-fn is_part_number_valid(
-    part_number: &PartNumber,
-    symbols: &Vec<Symbol>,
-    row_count: usize,
-    col_count: usize,
-) -> bool {
-    let min_row: usize = if part_number.row == 0 {
-        0
+fn get_gear_part_numbers<'a>(symbol: &Symbol, parts: &'a Vec<PartNumber>, row_count: usize, col_count: usize) -> Option<(&'a PartNumber, &'a PartNumber)> {
+    let mut first_part_number: Option<&'a PartNumber> = None;
+    let mut second_part_number: Option<&'a PartNumber> = None;
+
+    let min_row: usize = if symbol.row == 0 {
+        symbol.row
     } else {
-        part_number.row - 1
+        symbol.row - 1
     };
 
-    let max_row: usize = if part_number.row == row_count - 1 {
-        part_number.row
+    let max_row: usize = if symbol.row == row_count - 1 {
+        symbol.row
     } else {
-        part_number.row + 1
-    };
-    let min_col: usize = if part_number.start_col == 0 {
-        0
-    } else {
-        part_number.start_col - 1
+        symbol.row + 1
     };
 
-    let max_col: usize = if part_number.end_col == col_count - 1 {
-        part_number.end_col
+    let min_col: usize = if symbol.col == 0 {
+        symbol.col
     } else {
-        part_number.end_col + 1
+        symbol.col - 1
     };
 
-    for symbol in symbols {
-        if symbol.row >= min_row
-            && symbol.row <= max_row
-            && symbol.col >= min_col
-            && symbol.col <= max_col
+    let max_col: usize = if symbol.col == col_count - 1 {
+        symbol.col
+    } else {
+        symbol.col + 1
+    };
+
+    for part in parts {
+        if part.row >= min_row
+            && part.row <= max_row
+            && ((part.start_col <= min_col && part.end_col >= min_col)
+                || (part.start_col >= min_col && part.start_col <= max_col)
+                || (part.start_col >= min_col && part.end_col <= max_col))
         {
-            return true;
+            if first_part_number.is_none() {
+                first_part_number = Some(part);
+            } else if second_part_number.is_none() {
+                second_part_number = Some(part);
+            }
+            else {
+                return None;
+            }
         }
     }
 
-    false
+    if first_part_number.is_some() && second_part_number.is_some() {
+        return Some((first_part_number.unwrap(), second_part_number.unwrap()));
+    }
+
+    None
 }
