@@ -8,18 +8,25 @@ fn main() {
 }
 
 fn do_work<const W: usize, const N: usize, const C: usize>(data: [ScratchCard<W, N>; C]) -> u64 {
-    data.iter().map(get_point_value).sum()
+    let mut card_counts: [u64; C] = [1; C];
+    
+    for i in 0..C {
+        let copies = card_counts[i];
+        let matches = get_matches(&data[i]);
+
+        for j in 1..matches+1 {
+            if (i + j) < C {
+                card_counts[i+j] += copies;
+            }
+        }
+    }
+
+    card_counts.iter().sum()
 }
 
-fn get_point_value<const W: usize, const N: usize>(card: &ScratchCard<W, N>) -> u64 {
+fn get_matches<const W: usize, const N: usize>(card: &ScratchCard<W, N>) -> usize {
     let winning_numbers = HashSet::from(card.winning_numbers);
     let numbers = HashSet::from(card.numbers);
 
-    let matching_numbers = winning_numbers.intersection(&numbers).count();
-
-    if matching_numbers == 0 {
-        0
-    } else {
-        2u64.pow((matching_numbers as u32) - 1)
-    }
+    winning_numbers.intersection(&numbers).count()
 }
