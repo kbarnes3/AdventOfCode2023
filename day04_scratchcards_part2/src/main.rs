@@ -9,14 +9,14 @@ fn main() {
 
 fn do_work<const W: usize, const N: usize, const C: usize>(data: [ScratchCard<W, N>; C]) -> u64 {
     let mut card_counts: [u64; C] = [1; C];
-    
+
     for i in 0..C {
         let copies = card_counts[i];
         let matches = get_matches(&data[i]);
 
-        for j in 1..matches+1 {
+        for j in 1..matches + 1 {
             if (i + j) < C {
-                card_counts[i+j] += copies;
+                card_counts[i + j] += copies;
             }
         }
     }
