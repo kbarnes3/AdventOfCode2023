@@ -98,7 +98,12 @@ fn parse_schematic<const X: usize, const Y: usize>(data: [[char; Y]; X]) -> Sche
     }
 }
 
-fn get_gear_part_numbers<'a>(symbol: &Symbol, parts: &'a Vec<PartNumber>, row_count: usize, col_count: usize) -> Option<(&'a PartNumber, &'a PartNumber)> {
+fn get_gear_part_numbers<'a>(
+    symbol: &Symbol,
+    parts: &'a Vec<PartNumber>,
+    row_count: usize,
+    col_count: usize,
+) -> Option<(&'a PartNumber, &'a PartNumber)> {
     let mut first_part_number: Option<&'a PartNumber> = None;
     let mut second_part_number: Option<&'a PartNumber> = None;
 
@@ -137,15 +142,16 @@ fn get_gear_part_numbers<'a>(symbol: &Symbol, parts: &'a Vec<PartNumber>, row_co
                 first_part_number = Some(part);
             } else if second_part_number.is_none() {
                 second_part_number = Some(part);
-            }
-            else {
+            } else {
                 return None;
             }
         }
     }
 
-    if first_part_number.is_some() && second_part_number.is_some() {
-        return Some((first_part_number.unwrap(), second_part_number.unwrap()));
+    if let Some(first_part_number) = first_part_number {
+        if let Some(second_part_number) = second_part_number {
+            return Some((first_part_number, second_part_number));
+        }
     }
 
     None
