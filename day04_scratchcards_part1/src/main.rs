@@ -1,6 +1,6 @@
-use std::collections::HashSet;
 #[allow(unused_imports)]
 use day04_scratchcards_common::{ScratchCard, SAMPLE_DATA};
+use std::collections::HashSet;
 
 fn main() {
     let result = do_work(SAMPLE_DATA);
