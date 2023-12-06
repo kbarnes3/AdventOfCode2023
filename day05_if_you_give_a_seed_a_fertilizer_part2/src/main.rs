@@ -38,20 +38,22 @@ fn do_work<
         });
     }
 
-    for seed in data.seeds {
-        let soil = get_mapped_value(&data.seed_to_soil, seed);
-        let fertilizer = get_mapped_value(&data.soil_to_fertilizer, soil);
-        let water = get_mapped_value(&data.fertilizer_to_water, fertilizer);
-        let light = get_mapped_value(&data.water_to_light, water);
-        let temperature = get_mapped_value(&data.light_to_temperature, light);
-        let humidity = get_mapped_value(&data.temperature_to_humidity, temperature);
-        let location = get_mapped_value(&data.humidity_to_location, humidity);
+    for seed_range in seed_ranges {
+        for seed in seed_range.start..seed_range.start + seed_range.range {
+            let soil = get_mapped_value(&data.seed_to_soil, seed);
+            let fertilizer = get_mapped_value(&data.soil_to_fertilizer, soil);
+            let water = get_mapped_value(&data.fertilizer_to_water, fertilizer);
+            let light = get_mapped_value(&data.water_to_light, water);
+            let temperature = get_mapped_value(&data.light_to_temperature, light);
+            let humidity = get_mapped_value(&data.temperature_to_humidity, temperature);
+            let location = get_mapped_value(&data.humidity_to_location, humidity);
 
-        match closest_location {
-            None => closest_location = Some(location),
-            Some(current) => {
-                if location < current {
-                    closest_location = Some(location);
+            match closest_location {
+                None => closest_location = Some(location),
+                Some(current) => {
+                    if location < current {
+                        closest_location = Some(location);
+                    }
                 }
             }
         }
