@@ -2,7 +2,7 @@
 use day05_if_you_give_a_seed_a_fertilizer_common::{Almanac, Mapping, REAL_DATA, SAMPLE_DATA};
 
 fn main() {
-    let result = do_work(SAMPLE_DATA);
+    let result = do_work(REAL_DATA);
     println!("{}", result);
 }
 
