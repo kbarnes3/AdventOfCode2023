@@ -1,9 +1,16 @@
+use array_init::array_init;
+
 #[allow(unused_imports)]
 use day05_if_you_give_a_seed_a_fertilizer_common::{Almanac, Mapping, REAL_DATA, SAMPLE_DATA};
 
 fn main() {
     let result = do_work(SAMPLE_DATA);
     println!("{}", result);
+}
+
+struct SeedRange {
+    start: u64,
+    range: u64,
 }
 
 fn do_work<
@@ -19,6 +26,8 @@ fn do_work<
     data: Almanac<N, S, F, W, L, T, H, M>,
 ) -> u64 {
     let mut closest_location: Option<u64> = None;
+    let mut seed_ranges: [SeedRange; N / 2] =
+        array_init(|i| SeedRange { data.seeds[i * 2], data.seeds[i * 2 + 1] });
 
     for seed in data.seeds {
         let soil = get_mapped_value(&data.seed_to_soil, seed);
