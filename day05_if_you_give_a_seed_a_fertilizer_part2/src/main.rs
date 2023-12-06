@@ -1,7 +1,6 @@
-use array_init::array_init;
-
 #[allow(unused_imports)]
 use day05_if_you_give_a_seed_a_fertilizer_common::{Almanac, Mapping, REAL_DATA, SAMPLE_DATA};
+use std::vec::Vec;
 
 fn main() {
     let result = do_work(SAMPLE_DATA);
@@ -26,8 +25,18 @@ fn do_work<
     data: Almanac<N, S, F, W, L, T, H, M>,
 ) -> u64 {
     let mut closest_location: Option<u64> = None;
-    let mut seed_ranges: [SeedRange; N / 2] =
-        array_init(|i| SeedRange { data.seeds[i * 2], data.seeds[i * 2 + 1] });
+    let mut seed_ranges: Vec<SeedRange> = Vec::new();
+
+    if (N % 2) != 0 {
+        panic!("N must be even");
+    }
+
+    for i in (0..N).step_by(2) {
+        seed_ranges.push(SeedRange {
+            start: data.seeds[i],
+            range: data.seeds[i + 1],
+        });
+    }
 
     for seed in data.seeds {
         let soil = get_mapped_value(&data.seed_to_soil, seed);
