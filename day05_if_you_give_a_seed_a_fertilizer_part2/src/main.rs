@@ -8,7 +8,7 @@ fn main() {
     println!("{}", result);
 }
 
-#[derive(Eq)]
+#[derive(Clone, Copy, Eq)]
 struct Range {
     start: u64,
     range: u64,
@@ -94,11 +94,53 @@ fn get_mapped_value<const N: usize>(mappings: &[Mapping; N], value: u64) -> u64 
     value
 }
 
-fn get_mapped_ranges<const N: usize>(mappings: &[Mapping; N], input_ranges: &SortedSet<Range>) -> SortedSet<Range> {
+fn get_mapped_ranges<const N: usize>(mappings: &[Mapping; N], input_ranges: SortedSet<Range>) -> SortedSet<Range> {
     let mut mapped_ranges: SortedSet<Range> = SortedSet::new();
     let input_ranges = input_ranges.into_vec();
     let sorted_mappings: SortedSet<Mapping> = SortedSet::from_unsorted(mappings.to_vec());
     let sorted_mappings = sorted_mappings.into_vec();
+
+    for input_range in input_ranges {
+        let mut remaining_start = input_range.start;
+        let mut remaining_length = input_range.range;
+        // Find the indices of the mappings on either side of the start of input_range
+        let partition_point: usize = sorted_mappings.partition_point(|&x| x.source_range_start < input_range.start);
+
+        let mut current_mapping: Option<Mapping> = None;
+        if partition_point > 0 {
+            current_mapping = Some(sorted_mappings[partition_point - 1]);
+        }
+
+        let mut next_mapping: Option<Mapping> = None;
+        if partition_point < sorted_mappings.len() {
+            next_mapping = Some(sorted_mappings[partition_point]);
+        }
+
+        while remaining_length > 0 {
+            // See if any of the input_range are mapped by current_range
+            if let Some(current_mapping) = current_mapping {
+                if current_mapping.source_range_start > remaining_start {
+                    panic!("current_mapping.source_range_start > remaining_start");
+                }
+
+                let current_mapping_end = current_mapping.source_range_start + current_mapping.range_length - 1;
+                if remaining_start <= current_mapping_end {
+                    // At least some of our remaining items are handled by current_mapping
+                    let mapped_length = current_mapping.range_length - (remaining_start - current_mapping.source_range_start);
+                    if mapped_length > remaining_length {
+                        // All the remaining items are mapped by current_mapping
+                        let mut mapped_start = (remaining_start - current_mapping.source_range_start) + current_mapping.destination_range_start;
+                        mapped_ranges.push(Range {
+                            start: mapped_start,
+                            range: remaining_length,
+                        });
+                        remaining_length = 0;
+                    }
+                }
+            }
+        }
+
+    }
 
     mapped_ranges
 }
