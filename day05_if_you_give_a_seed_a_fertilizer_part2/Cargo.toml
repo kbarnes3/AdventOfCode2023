@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 day05_if_you_give_a_seed_a_fertilizer_common = { path = "../day05_if_you_give_a_seed_a_fertilizer_common" }
+sorted-vec = "0.8.3"

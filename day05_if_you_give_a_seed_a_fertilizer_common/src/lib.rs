@@ -1,7 +1,28 @@
+use std::cmp::Ordering;
+
+#[derive(Copy, Clone, Eq)]
 pub struct Mapping {
     pub destination_range_start: u64,
     pub source_range_start: u64,
     pub range_length: u64,
+}
+
+impl Ord for Mapping {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.source_range_start.cmp(&other.source_range_start)
+    }
+}
+
+impl PartialOrd for Mapping {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for Mapping {
+    fn eq(&self, other: &Self) -> bool {
+        self.source_range_start == other.source_range_start
+    }
 }
 
 pub struct Almanac<

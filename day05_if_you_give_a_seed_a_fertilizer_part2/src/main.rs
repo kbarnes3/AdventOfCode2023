@@ -1,15 +1,35 @@
 #[allow(unused_imports)]
 use day05_if_you_give_a_seed_a_fertilizer_common::{Almanac, Mapping, REAL_DATA, SAMPLE_DATA};
-use std::vec::Vec;
+use std::cmp::Ordering;
+use sorted_vec::SortedSet;
 
 fn main() {
     let result = do_work(SAMPLE_DATA);
     println!("{}", result);
 }
 
-struct SeedRange {
+#[derive(Eq)]
+struct Range {
     start: u64,
     range: u64,
+}
+
+impl Ord for Range {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.start.cmp(&other.start)
+    }
+}
+
+impl PartialOrd for Range {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for Range {
+    fn eq(&self, other: &Self) -> bool {
+        self.start == other.start
+    }
 }
 
 fn do_work<
@@ -25,20 +45,20 @@ fn do_work<
     data: Almanac<N, S, F, W, L, T, H, M>,
 ) -> u64 {
     let mut closest_location: Option<u64> = None;
-    let mut seed_ranges: Vec<SeedRange> = Vec::new();
+    let mut seed_ranges: SortedSet<Range> = SortedSet::new();
 
     if (N % 2) != 0 {
         panic!("N must be even");
     }
 
     for i in (0..N).step_by(2) {
-        seed_ranges.push(SeedRange {
+        seed_ranges.push(Range {
             start: data.seeds[i],
             range: data.seeds[i + 1],
         });
     }
 
-    for seed_range in seed_ranges {
+    for seed_range in seed_ranges.into_vec() {
         for seed in seed_range.start..seed_range.start + seed_range.range {
             let soil = get_mapped_value(&data.seed_to_soil, seed);
             let fertilizer = get_mapped_value(&data.soil_to_fertilizer, soil);
@@ -72,4 +92,13 @@ fn get_mapped_value<const N: usize>(mappings: &[Mapping; N], value: u64) -> u64 
     }
 
     value
+}
+
+fn get_mapped_ranges<const N: usize>(mappings: &[Mapping; N], input_ranges: &SortedSet<Range>) -> SortedSet<Range> {
+    let mut mapped_ranges: SortedSet<Range> = SortedSet::new();
+    let input_ranges = input_ranges.into_vec();
+    let sorted_mappings: SortedSet<Mapping> = SortedSet::from_unsorted(mappings.to_vec());
+    let sorted_mappings = sorted_mappings.into_vec();
+
+    mapped_ranges
 }
