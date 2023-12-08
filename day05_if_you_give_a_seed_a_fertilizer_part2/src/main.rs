@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
 use day05_if_you_give_a_seed_a_fertilizer_common::{Almanac, Mapping, REAL_DATA, SAMPLE_DATA};
-use std::cmp::Ordering;
 use sorted_vec::SortedSet;
+use std::cmp::Ordering;
 
 fn main() {
     let result = do_work(SAMPLE_DATA);
@@ -63,17 +63,19 @@ fn do_work<
     let light_ranges = get_mapped_ranges(&data.water_to_light, water_ranges);
     let temperature_ranges = get_mapped_ranges(&data.light_to_temperature, light_ranges);
     let humidity_ranges = get_mapped_ranges(&data.temperature_to_humidity, temperature_ranges);
-    let location_ranges = get_mapped_ranges(&data.humidity_to_location, humidity_ranges); 
+    let location_ranges = get_mapped_ranges(&data.humidity_to_location, humidity_ranges);
 
     if location_ranges.is_empty() {
         panic!("No locations found");
     }
 
     location_ranges[0].start
-
 }
 
-fn get_mapped_ranges<const N: usize>(mappings: &[Mapping; N], input_ranges: SortedSet<Range>) -> SortedSet<Range> {
+fn get_mapped_ranges<const N: usize>(
+    mappings: &[Mapping; N],
+    input_ranges: SortedSet<Range>,
+) -> SortedSet<Range> {
     let mut mapped_ranges: SortedSet<Range> = SortedSet::new();
     let input_ranges = input_ranges.into_vec();
     let sorted_mappings: SortedSet<Mapping> = SortedSet::from_unsorted(mappings.to_vec());
@@ -83,7 +85,8 @@ fn get_mapped_ranges<const N: usize>(mappings: &[Mapping; N], input_ranges: Sort
         let mut remaining_start = input_range.start;
         let mut remaining_length = input_range.range;
         // Find the indices of the mappings on either side of the start of input_range
-        let mut partition_point: usize = sorted_mappings.partition_point(|&x| x.source_range_start < input_range.start);
+        let mut partition_point: usize =
+            sorted_mappings.partition_point(|&x| x.source_range_start < input_range.start);
 
         let mut current_mapping: Option<Mapping> = None;
         if partition_point > 0 {
@@ -102,13 +105,18 @@ fn get_mapped_ranges<const N: usize>(mappings: &[Mapping; N], input_ranges: Sort
                     panic!("current_mapping.source_range_start > remaining_start");
                 }
 
-                let current_mapping_end = current_mapping_value.source_range_start + current_mapping_value.range_length - 1;
+                let current_mapping_end = current_mapping_value.source_range_start
+                    + current_mapping_value.range_length
+                    - 1;
                 if remaining_start <= current_mapping_end {
                     // At least some of our remaining items are handled by current_mapping
-                    let mapped_length = current_mapping_value.range_length - (remaining_start - current_mapping_value.source_range_start);
+                    let mapped_length = current_mapping_value.range_length
+                        - (remaining_start - current_mapping_value.source_range_start);
                     if mapped_length > remaining_length {
                         // All the remaining items are mapped by current_mapping
-                        let mapped_start = (remaining_start - current_mapping_value.source_range_start) + current_mapping_value.destination_range_start;
+                        let mapped_start = (remaining_start
+                            - current_mapping_value.source_range_start)
+                            + current_mapping_value.destination_range_start;
                         mapped_ranges.push(Range {
                             start: mapped_start,
                             range: remaining_length,
@@ -117,26 +125,27 @@ fn get_mapped_ranges<const N: usize>(mappings: &[Mapping; N], input_ranges: Sort
                     } else {
                         // Only some of our remaining items are handled by current_mapping
                         let mapped_length = current_mapping_end - remaining_start + 1;
-                        let mapped_start = (remaining_start - current_mapping_value.source_range_start) + current_mapping_value.destination_range_start;
-    
+                        let mapped_start = (remaining_start
+                            - current_mapping_value.source_range_start)
+                            + current_mapping_value.destination_range_start;
+
                         mapped_ranges.push(Range {
                             start: mapped_start,
                             range: mapped_length,
                         });
-    
+
                         remaining_start += mapped_length;
                         remaining_length -= mapped_length;
                     }
-                }
-                else {
+                } else {
                     // Clear out current_mapping because none of the remaining items are handled by it
                     current_mapping = None;
                 }
-            }
-            else {
+            } else {
                 // Some of the remaining items may not handled by a mapping
                 if let Some(next_mapping_value) = next_mapping {
-                    let unmapped_range_length = next_mapping_value.source_range_start - remaining_start;
+                    let unmapped_range_length =
+                        next_mapping_value.source_range_start - remaining_start;
                     if unmapped_range_length > remaining_length {
                         // All the remaining items are unmapped
                         mapped_ranges.push(Range {
@@ -154,7 +163,7 @@ fn get_mapped_ranges<const N: usize>(mappings: &[Mapping; N], input_ranges: Sort
                         remaining_length -= unmapped_range_length;
                     }
 
-                    // See if we should advance current_mapping and next_mapping 
+                    // See if we should advance current_mapping and next_mapping
                     if remaining_start >= next_mapping_value.source_range_start {
                         current_mapping = next_mapping;
                         partition_point += 1;
@@ -174,7 +183,6 @@ fn get_mapped_ranges<const N: usize>(mappings: &[Mapping; N], input_ranges: Sort
                 }
             }
         }
-
     }
 
     mapped_ranges
