@@ -44,7 +44,6 @@ fn do_work<
 >(
     data: Almanac<N, S, F, W, L, T, H, M>,
 ) -> u64 {
-    let mut closest_location: Option<u64> = None;
     let mut seed_ranges: SortedSet<Range> = SortedSet::new();
 
     if (N % 2) != 0 {
@@ -72,18 +71,6 @@ fn do_work<
 
     location_ranges[0].start
 
-}
-
-fn get_mapped_value<const N: usize>(mappings: &[Mapping; N], value: u64) -> u64 {
-    for mapping in mappings {
-        if value >= mapping.source_range_start
-            && value < mapping.source_range_start + mapping.range_length
-        {
-            return mapping.destination_range_start + (value - mapping.source_range_start);
-        }
-    }
-
-    value
 }
 
 fn get_mapped_ranges<const N: usize>(mappings: &[Mapping; N], input_ranges: SortedSet<Range>) -> SortedSet<Range> {
@@ -142,37 +129,48 @@ fn get_mapped_ranges<const N: usize>(mappings: &[Mapping; N], input_ranges: Sort
                     }
                 }
                 else {
-                    // Some of the remaining items may not handled by a mapping
-                    if let Some(next_mapping_value) = next_mapping {
-                        let unmapped_range_length = next_mapping_value.source_range_start - remaining_start;
-                        if unmapped_range_length > remaining_length {
-                            // All the remaining items are unmapped
-                            mapped_ranges.push(Range {
-                                start: remaining_start,
-                                range: remaining_length,
-                            });
-                            remaining_length = 0;
-                        } else {
-                            // Only some of the remaining items are unmapped
-                            mapped_ranges.push(Range {
-                                start: remaining_start,
-                                range: unmapped_range_length,
-                            });
-                            remaining_start += unmapped_range_length;
-                            remaining_length -= unmapped_range_length;
-                        }
+                    // Clear out current_mapping because none of the remaining items are handled by it
+                    current_mapping = None;
+                }
+            }
+            else {
+                // Some of the remaining items may not handled by a mapping
+                if let Some(next_mapping_value) = next_mapping {
+                    let unmapped_range_length = next_mapping_value.source_range_start - remaining_start;
+                    if unmapped_range_length > remaining_length {
+                        // All the remaining items are unmapped
+                        mapped_ranges.push(Range {
+                            start: remaining_start,
+                            range: remaining_length,
+                        });
+                        remaining_length = 0;
+                    } else {
+                        // Only some of the remaining items are unmapped
+                        mapped_ranges.push(Range {
+                            start: remaining_start,
+                            range: unmapped_range_length,
+                        });
+                        remaining_start += unmapped_range_length;
+                        remaining_length -= unmapped_range_length;
+                    }
 
-                        // See if we should advance current_mapping and next_mapping 
-                        if remaining_start >= next_mapping_value.source_range_start {
-                            current_mapping = next_mapping;
-                            partition_point += 1;
-                            if partition_point < sorted_mappings.len() {
-                                next_mapping = Some(sorted_mappings[partition_point]);
-                            } else {
-                                next_mapping = None;
-                            }
+                    // See if we should advance current_mapping and next_mapping 
+                    if remaining_start >= next_mapping_value.source_range_start {
+                        current_mapping = next_mapping;
+                        partition_point += 1;
+                        if partition_point < sorted_mappings.len() {
+                            next_mapping = Some(sorted_mappings[partition_point]);
+                        } else {
+                            next_mapping = None;
                         }
                     }
+                } else {
+                    // All mappings are below the remaining items, pass through the remaining range unmapped
+                    mapped_ranges.push(Range {
+                        start: remaining_start,
+                        range: remaining_length,
+                    });
+                    remaining_length = 0;
                 }
             }
         }
