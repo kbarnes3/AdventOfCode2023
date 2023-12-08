@@ -1,8 +1,8 @@
 #[allow(unused_imports)]
-use day06_wait_for_it_common::{RaceRecords, SAMPLE_DATA};
+use day06_wait_for_it_common::{RaceRecords, REAL_DATA, SAMPLE_DATA};
 
 fn main() {
-    let result = do_work(SAMPLE_DATA);
+    let result = do_work(REAL_DATA);
     println!("{}", result);
 }
 
