@@ -4,7 +4,7 @@ use sorted_vec::SortedSet;
 use std::cmp::Ordering;
 
 fn main() {
-    let result = do_work(SAMPLE_DATA);
+    let result = do_work(REAL_DATA);
     println!("{}", result);
 }
 
@@ -112,11 +112,14 @@ fn get_mapped_ranges<const N: usize>(
                     // At least some of our remaining items are handled by current_mapping
                     let mapped_length = current_mapping_value.range_length
                         - (remaining_start - current_mapping_value.source_range_start);
-                    if mapped_length > remaining_length {
+                    if mapped_length >= remaining_length {
                         // All the remaining items are mapped by current_mapping
                         let mapped_start = (remaining_start
                             - current_mapping_value.source_range_start)
                             + current_mapping_value.destination_range_start;
+                        if remaining_length == 0 {
+                            panic!("remaining_length == 0");
+                        }
                         mapped_ranges.push(Range {
                             start: mapped_start,
                             range: remaining_length,
@@ -124,11 +127,13 @@ fn get_mapped_ranges<const N: usize>(
                         remaining_length = 0;
                     } else {
                         // Only some of our remaining items are handled by current_mapping
-                        let mapped_length = current_mapping_end - remaining_start + 1;
                         let mapped_start = (remaining_start
                             - current_mapping_value.source_range_start)
                             + current_mapping_value.destination_range_start;
 
+                        if mapped_length == 0 {
+                            panic!("mapped_length == 0");
+                        }
                         mapped_ranges.push(Range {
                             start: mapped_start,
                             range: mapped_length,
@@ -148,12 +153,18 @@ fn get_mapped_ranges<const N: usize>(
                         next_mapping_value.source_range_start - remaining_start;
                     if unmapped_range_length > remaining_length {
                         // All the remaining items are unmapped
+                        if remaining_length == 0 {
+                            panic!("remaining_length == 0");
+                        }
                         mapped_ranges.push(Range {
                             start: remaining_start,
                             range: remaining_length,
                         });
                         remaining_length = 0;
-                    } else {
+                    } else if unmapped_range_length > 0 {
+                        if unmapped_range_length == 0 {
+                            panic!("unmapped_range_length == 0");
+                        }
                         // Only some of the remaining items are unmapped
                         mapped_ranges.push(Range {
                             start: remaining_start,
@@ -174,6 +185,9 @@ fn get_mapped_ranges<const N: usize>(
                         }
                     }
                 } else {
+                    if remaining_length == 0 {
+                        panic!("remaining_length == 0");
+                    }
                     // All mappings are below the remaining items, pass through the remaining range unmapped
                     mapped_ranges.push(Range {
                         start: remaining_start,
