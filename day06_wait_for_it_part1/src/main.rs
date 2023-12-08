@@ -37,7 +37,6 @@ fn get_distance_for_hold_time(total_time: u64, hold_time: u64) -> u64 {
     }
 
     let running_time = total_time - hold_time;
-    let distance = running_time * hold_time;
 
-    distance
+    running_time * hold_time
 }
