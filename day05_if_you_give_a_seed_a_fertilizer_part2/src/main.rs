@@ -58,28 +58,20 @@ fn do_work<
         });
     }
 
-    for seed_range in seed_ranges.into_vec() {
-        for seed in seed_range.start..seed_range.start + seed_range.range {
-            let soil = get_mapped_value(&data.seed_to_soil, seed);
-            let fertilizer = get_mapped_value(&data.soil_to_fertilizer, soil);
-            let water = get_mapped_value(&data.fertilizer_to_water, fertilizer);
-            let light = get_mapped_value(&data.water_to_light, water);
-            let temperature = get_mapped_value(&data.light_to_temperature, light);
-            let humidity = get_mapped_value(&data.temperature_to_humidity, temperature);
-            let location = get_mapped_value(&data.humidity_to_location, humidity);
+    let soil_ranges = get_mapped_ranges(&data.seed_to_soil, seed_ranges);
+    let fertilizer_ranges = get_mapped_ranges(&data.soil_to_fertilizer, soil_ranges);
+    let water_ranges = get_mapped_ranges(&data.fertilizer_to_water, fertilizer_ranges);
+    let light_ranges = get_mapped_ranges(&data.water_to_light, water_ranges);
+    let temperature_ranges = get_mapped_ranges(&data.light_to_temperature, light_ranges);
+    let humidity_ranges = get_mapped_ranges(&data.temperature_to_humidity, temperature_ranges);
+    let location_ranges = get_mapped_ranges(&data.humidity_to_location, humidity_ranges); 
 
-            match closest_location {
-                None => closest_location = Some(location),
-                Some(current) => {
-                    if location < current {
-                        closest_location = Some(location);
-                    }
-                }
-            }
-        }
+    if location_ranges.is_empty() {
+        panic!("No locations found");
     }
 
-    closest_location.unwrap()
+    location_ranges[0].start
+
 }
 
 fn get_mapped_value<const N: usize>(mappings: &[Mapping; N], value: u64) -> u64 {
@@ -104,7 +96,7 @@ fn get_mapped_ranges<const N: usize>(mappings: &[Mapping; N], input_ranges: Sort
         let mut remaining_start = input_range.start;
         let mut remaining_length = input_range.range;
         // Find the indices of the mappings on either side of the start of input_range
-        let partition_point: usize = sorted_mappings.partition_point(|&x| x.source_range_start < input_range.start);
+        let mut partition_point: usize = sorted_mappings.partition_point(|&x| x.source_range_start < input_range.start);
 
         let mut current_mapping: Option<Mapping> = None;
         if partition_point > 0 {
@@ -118,23 +110,68 @@ fn get_mapped_ranges<const N: usize>(mappings: &[Mapping; N], input_ranges: Sort
 
         while remaining_length > 0 {
             // See if any of the input_range are mapped by current_range
-            if let Some(current_mapping) = current_mapping {
-                if current_mapping.source_range_start > remaining_start {
+            if let Some(current_mapping_value) = current_mapping {
+                if current_mapping_value.source_range_start > remaining_start {
                     panic!("current_mapping.source_range_start > remaining_start");
                 }
 
-                let current_mapping_end = current_mapping.source_range_start + current_mapping.range_length - 1;
+                let current_mapping_end = current_mapping_value.source_range_start + current_mapping_value.range_length - 1;
                 if remaining_start <= current_mapping_end {
                     // At least some of our remaining items are handled by current_mapping
-                    let mapped_length = current_mapping.range_length - (remaining_start - current_mapping.source_range_start);
+                    let mapped_length = current_mapping_value.range_length - (remaining_start - current_mapping_value.source_range_start);
                     if mapped_length > remaining_length {
                         // All the remaining items are mapped by current_mapping
-                        let mut mapped_start = (remaining_start - current_mapping.source_range_start) + current_mapping.destination_range_start;
+                        let mapped_start = (remaining_start - current_mapping_value.source_range_start) + current_mapping_value.destination_range_start;
                         mapped_ranges.push(Range {
                             start: mapped_start,
                             range: remaining_length,
                         });
                         remaining_length = 0;
+                    } else {
+                        // Only some of our remaining items are handled by current_mapping
+                        let mapped_length = current_mapping_end - remaining_start + 1;
+                        let mapped_start = (remaining_start - current_mapping_value.source_range_start) + current_mapping_value.destination_range_start;
+    
+                        mapped_ranges.push(Range {
+                            start: mapped_start,
+                            range: mapped_length,
+                        });
+    
+                        remaining_start += mapped_length;
+                        remaining_length -= mapped_length;
+                    }
+                }
+                else {
+                    // Some of the remaining items may not handled by a mapping
+                    if let Some(next_mapping_value) = next_mapping {
+                        let unmapped_range_length = next_mapping_value.source_range_start - remaining_start;
+                        if unmapped_range_length > remaining_length {
+                            // All the remaining items are unmapped
+                            mapped_ranges.push(Range {
+                                start: remaining_start,
+                                range: remaining_length,
+                            });
+                            remaining_length = 0;
+                        } else {
+                            // Only some of the remaining items are unmapped
+                            mapped_ranges.push(Range {
+                                start: remaining_start,
+                                range: unmapped_range_length,
+                            });
+                            remaining_start += unmapped_range_length;
+                            remaining_length -= unmapped_range_length;
+                        }
+
+                        // See if we should advance current_mapping and next_mapping 
+                        if remaining_start >= next_mapping_value.source_range_start {
+                            current_mapping = next_mapping;
+                            partition_point += 1;
+                            if partition_point < sorted_mappings.len() {
+                                next_mapping = Some(sorted_mappings[partition_point]);
+                            } else {
+                                next_mapping = None;
+                            }
+                        }
                     }
                 }
             }
