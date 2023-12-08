@@ -2,7 +2,7 @@
 use day06_wait_for_it_common::{RaceRecords, REAL_DATA_PART2, SAMPLE_DATA_PART2};
 
 fn main() {
-    let result = do_work(SAMPLE_DATA_PART2);
+    let result = do_work(REAL_DATA_PART2);
     println!("{}", result);
 }
 
