@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use strum::{EnumIter, IntoEnumIterator};
 
 fn main() {
-    let result = do_work(SAMPLE_DATA);
+    let result = do_work(REAL_DATA);
     println!("{}", result);
 }
 
@@ -140,13 +140,11 @@ fn map_card(raw_card: char) -> Card {
 
 fn compute_hand_type(hand: &[Card; 5]) -> HandType {
     let mut card_counts: HashMap<Card, u8> = HashMap::new();
+    let mut joker_count: u8 = 0;
     for card in hand {
         if card == &Card::Joker {
-            // A Joker can be used as any card, so increment all the counts
-            for any_card in Card::iter() {
-                let count = card_counts.entry(any_card).or_insert(0);
-                *count += 1;
-            }
+            // A Joker can be used as any card, so keep track separately
+            joker_count += 1;
         } else {
             let count = card_counts.entry(*card).or_insert(0);
             *count += 1;
@@ -164,6 +162,12 @@ fn compute_hand_type(hand: &[Card; 5]) -> HandType {
             second_highest_count = Some(count);
         }
     }
+
+    // Add the jokers to the highest count
+    highest_count = match highest_count {
+        Some(count) => Some(count + joker_count),
+        None => Some(joker_count),
+    };
 
     match highest_count {
         Some(5) => HandType::FiveOfAKind,
