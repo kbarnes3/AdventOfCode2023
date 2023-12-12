@@ -2,6 +2,7 @@
 use day07_camel_cards_common::{HandBid, REAL_DATA, SAMPLE_DATA};
 use std::cmp::Ordering;
 use std::collections::HashMap;
+use strum::{EnumIter, IntoEnumIterator};
 
 fn main() {
     let result = do_work(SAMPLE_DATA);
@@ -24,8 +25,9 @@ fn do_work<const N: usize>(data: [HandBid; N]) -> u64 {
     total_winnings
 }
 
-#[derive(PartialOrd, Ord, PartialEq, Eq, Hash, Copy, Clone)]
+#[derive(PartialOrd, Ord, PartialEq, Eq, Hash, Copy, Clone, EnumIter)]
 enum Card {
+    Joker,
     Two,
     Three,
     Four,
@@ -35,7 +37,6 @@ enum Card {
     Eight,
     Nine,
     Ten,
-    Jack,
     Queen,
     King,
     Ace,
@@ -120,6 +121,7 @@ fn process_hand(raw_hand: HandBid) -> ProcessedHandBid {
 
 fn map_card(raw_card: char) -> Card {
     match raw_card {
+        'J' => Card::Joker,
         '2' => Card::Two,
         '3' => Card::Three,
         '4' => Card::Four,
@@ -129,7 +131,6 @@ fn map_card(raw_card: char) -> Card {
         '8' => Card::Eight,
         '9' => Card::Nine,
         'T' => Card::Ten,
-        'J' => Card::Jack,
         'Q' => Card::Queen,
         'K' => Card::King,
         'A' => Card::Ace,
@@ -140,8 +141,16 @@ fn map_card(raw_card: char) -> Card {
 fn compute_hand_type(hand: &[Card; 5]) -> HandType {
     let mut card_counts: HashMap<Card, u8> = HashMap::new();
     for card in hand {
-        let count = card_counts.entry(*card).or_insert(0);
-        *count += 1;
+        if card == &Card::Joker {
+            // A Joker can be used as any card, so increment all the counts
+            for any_card in Card::iter() {
+                let count = card_counts.entry(any_card).or_insert(0);
+                *count += 1;
+            }
+        } else {
+            let count = card_counts.entry(*card).or_insert(0);
+            *count += 1;
+        }
     }
 
     let mut highest_count: Option<u8> = None;

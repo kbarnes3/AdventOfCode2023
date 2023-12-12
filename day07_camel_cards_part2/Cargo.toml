@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 day07_camel_cards_common = { path = "../day07_camel_cards_common" }
+strum = { version = "0.25", features = ["derive"] }
