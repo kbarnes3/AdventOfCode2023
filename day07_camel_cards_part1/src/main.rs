@@ -13,7 +13,7 @@ fn do_work<const N: usize>(data: [HandBid; N]) -> u64 {
     processed_hands[0].bid
 }
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Hash, Copy, Clone)]
 enum Card {
     Two,
     Three,
