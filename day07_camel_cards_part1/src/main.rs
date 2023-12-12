@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use day07_camel_cards_common::{HandBid, SAMPLE_DATA};
@@ -8,12 +9,22 @@ fn main() {
 }
 
 fn do_work<const N: usize>(data: [HandBid; N]) -> u64 {
-    let processed_hands: [ProcessedHandBid; N] = process_hands(data);
+    let mut processed_hands: Vec<ProcessedHandBid> = process_hands(data);
+    processed_hands.sort();
 
-    processed_hands[0].bid
+    let mut total_winnings: u64 = 0;
+
+    for i in 0..N {
+        let rank: u64 = (i + 1) as u64;
+
+        let hand_winnings: u64 = rank * processed_hands[i].bid;
+        total_winnings += hand_winnings;
+    }
+
+    total_winnings
 }
 
-#[derive(PartialEq, Eq, Hash, Copy, Clone)]
+#[derive(PartialOrd, Ord, PartialEq, Eq, Hash, Copy, Clone)]
 enum Card {
     Two,
     Three,
@@ -30,7 +41,7 @@ enum Card {
     Ace,
 }
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialOrd, Ord, PartialEq, Eq)]
 enum HandType {
     HighCard,
     OnePair,
@@ -41,16 +52,58 @@ enum HandType {
     FiveOfAKind,
 }
 
+#[derive(Eq)]
 struct ProcessedHandBid {
     hand: [Card; 5],
     hand_type: HandType,
     bid: u64,
 }
 
-fn process_hands<const N: usize>(raw_hands: [HandBid; N]) -> [ProcessedHandBid; N] {
-    let processed_hands: [ProcessedHandBid; N] = raw_hands.map(|hand_bid| {
-        process_hand(hand_bid)
-    });
+impl Ord for ProcessedHandBid {
+    fn cmp(&self, other: &Self) -> Ordering {
+        let ordering = self.hand_type.cmp(&other.hand_type);
+        if ordering != Ordering::Equal {
+            return ordering;
+        }
+
+        for i in 0..self.hand.len() {
+            let ordering = self.hand[i].cmp(&other.hand[i]);
+            if ordering != Ordering::Equal {
+                return ordering;
+            }
+        }
+
+        Ordering::Equal
+    }
+}
+
+impl PartialOrd for ProcessedHandBid {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for ProcessedHandBid {
+    fn eq(&self, other: &Self) -> bool {
+        let mut equal: bool = self.hand_type == other.hand_type;
+
+        if equal {
+            for i in 0..self.hand.len() {
+                equal = equal && self.hand[i] == other.hand[i];
+            }
+        }
+
+        equal
+    }
+}
+
+fn process_hands<const N: usize>(raw_hands: [HandBid; N]) -> Vec<ProcessedHandBid> {
+    let mut processed_hands: Vec<ProcessedHandBid> = Vec::with_capacity(N);
+    
+    for raw_hand in raw_hands {
+        let processed_hand: ProcessedHandBid = process_hand(raw_hand);
+        processed_hands.push(processed_hand);
+    }
 
     processed_hands
 }
