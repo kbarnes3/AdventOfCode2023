@@ -2,7 +2,6 @@
 use day07_camel_cards_common::{HandBid, REAL_DATA, SAMPLE_DATA};
 use std::cmp::Ordering;
 use std::collections::HashMap;
-use strum::{EnumIter, IntoEnumIterator};
 
 fn main() {
     let result = do_work(REAL_DATA);
@@ -25,7 +24,7 @@ fn do_work<const N: usize>(data: [HandBid; N]) -> u64 {
     total_winnings
 }
 
-#[derive(PartialOrd, Ord, PartialEq, Eq, Hash, Copy, Clone, EnumIter)]
+#[derive(PartialOrd, Ord, PartialEq, Eq, Hash, Copy, Clone)]
 enum Card {
     Joker,
     Two,
