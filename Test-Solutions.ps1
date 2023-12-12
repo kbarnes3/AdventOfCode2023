@@ -13,7 +13,7 @@ $Programs =
     @{"name" = "day05_if_you_give_a_seed_a_fertilizer_part2"; "output" = "60294664"},
     @{"name" = "day06_wait_for_it_part1"; "output" = "227850"},
     @{"name" = "day06_wait_for_it_part2"; "output" = "42948149"},
-    @{"name" = "day07_camel_cards_part1"; "output" = "6440"}
+    @{"name" = "day07_camel_cards_part1"; "output" = "253954294"}
 
 for ($i = 0; $i -lt $Programs.Length; $i++) {
     $program = $Programs[$i]

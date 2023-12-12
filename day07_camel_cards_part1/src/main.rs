@@ -1,10 +1,10 @@
 #[allow(unused_imports)]
-use day07_camel_cards_common::{HandBid, SAMPLE_DATA};
+use day07_camel_cards_common::{HandBid, REAL_DATA, SAMPLE_DATA};
 use std::cmp::Ordering;
 use std::collections::HashMap;
 
 fn main() {
-    let result = do_work(SAMPLE_DATA);
+    let result = do_work(REAL_DATA);
     println!("{}", result);
 }
 
