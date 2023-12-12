@@ -1,7 +1,7 @@
-use std::cmp::Ordering;
-use std::collections::HashMap;
 #[allow(unused_imports)]
 use day07_camel_cards_common::{HandBid, SAMPLE_DATA};
+use std::cmp::Ordering;
+use std::collections::HashMap;
 
 fn main() {
     let result = do_work(SAMPLE_DATA);
@@ -14,10 +14,10 @@ fn do_work<const N: usize>(data: [HandBid; N]) -> u64 {
 
     let mut total_winnings: u64 = 0;
 
-    for i in 0..N {
+    for (i, hand) in processed_hands.iter().enumerate() {
         let rank: u64 = (i + 1) as u64;
 
-        let hand_winnings: u64 = rank * processed_hands[i].bid;
+        let hand_winnings: u64 = rank * hand.bid;
         total_winnings += hand_winnings;
     }
 
@@ -37,7 +37,7 @@ enum Card {
     Ten,
     Jack,
     Queen,
-    King, 
+    King,
     Ace,
 }
 
@@ -99,7 +99,7 @@ impl PartialEq for ProcessedHandBid {
 
 fn process_hands<const N: usize>(raw_hands: [HandBid; N]) -> Vec<ProcessedHandBid> {
     let mut processed_hands: Vec<ProcessedHandBid> = Vec::with_capacity(N);
-    
+
     for raw_hand in raw_hands {
         let processed_hand: ProcessedHandBid = process_hand(raw_hand);
         processed_hands.push(processed_hand);
@@ -109,9 +109,7 @@ fn process_hands<const N: usize>(raw_hands: [HandBid; N]) -> Vec<ProcessedHandBi
 }
 
 fn process_hand(raw_hand: HandBid) -> ProcessedHandBid {
-    let hand: [Card; 5] = raw_hand.hand.map(|card| {
-        map_card(card)
-    });
+    let hand: [Card; 5] = raw_hand.hand.map(map_card);
     let hand_type: HandType = compute_hand_type(&hand);
     ProcessedHandBid {
         hand,
@@ -161,17 +159,13 @@ fn compute_hand_type(hand: &[Card; 5]) -> HandType {
     match highest_count {
         Some(5) => HandType::FiveOfAKind,
         Some(4) => HandType::FourOfAKind,
-        Some(3) => {
-            match second_highest_count {
-                Some(2) => HandType::FullHouse,
-                _ => HandType::ThreeOfAKind,
-            }
+        Some(3) => match second_highest_count {
+            Some(2) => HandType::FullHouse,
+            _ => HandType::ThreeOfAKind,
         },
-        Some(2) => {
-            match second_highest_count {
-                Some(2) => HandType::TwoPair,
-                _ => HandType::OnePair,
-            }
+        Some(2) => match second_highest_count {
+            Some(2) => HandType::TwoPair,
+            _ => HandType::OnePair,
         },
         _ => HandType::HighCard,
     }
