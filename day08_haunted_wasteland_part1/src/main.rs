@@ -1,5 +1,5 @@
 #[allow(unused_imports)]
-use day08_haunted_wasteland_common::{Direction, END_NODE, Map, NodeLink, SAMPLE_DATA, START_NODE};
+use day08_haunted_wasteland_common::{Direction, Map, NodeLink, END_NODE, SAMPLE_DATA, START_NODE};
 use std::collections::HashMap;
 
 fn main() {
@@ -20,7 +20,13 @@ struct Link<'a> {
 fn make_link_map<'a, const N: usize>(nodes: &[NodeLink<'a>; N]) -> HashMap<&'a str, Link<'a>> {
     let mut links: HashMap<&'a str, Link<'a>> = HashMap::new();
     for node in nodes {
-        links.insert(node.node, Link { left: node.left, right: node.right });
+        links.insert(
+            node.node,
+            Link {
+                left: node.left,
+                right: node.right,
+            },
+        );
     }
     links
 }

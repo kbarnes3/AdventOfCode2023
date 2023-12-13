@@ -22,15 +22,57 @@ pub const END_NODE: &str = "ZZZ";
 // '<,'>s/\(\w\+\) = (\(\w\+\), \(\w\+\))/{ NodeLink { node: "\1", left: "\2", right: "\3" } },
 
 pub const SAMPLE_DATA: Map<2, 7> = Map {
-    directions: [Direction::Right, Direction::Left, ],
+    directions: [Direction::Right, Direction::Left],
 
     nodes: [
-    { NodeLink { node: "AAA", left: "BBB", right: "CCC" } },
-    { NodeLink { node: "BBB", left: "DDD", right: "EEE" } },
-    { NodeLink { node: "CCC", left: "ZZZ", right: "GGG" } },
-    { NodeLink { node: "DDD", left: "DDD", right: "DDD" } },
-    { NodeLink { node: "EEE", left: "EEE", right: "EEE" } },
-    { NodeLink { node: "GGG", left: "GGG", right: "GGG" } },
-    { NodeLink { node: "ZZZ", left: "ZZZ", right: "ZZZ" } },
+        {
+            NodeLink {
+                node: "AAA",
+                left: "BBB",
+                right: "CCC",
+            }
+        },
+        {
+            NodeLink {
+                node: "BBB",
+                left: "DDD",
+                right: "EEE",
+            }
+        },
+        {
+            NodeLink {
+                node: "CCC",
+                left: "ZZZ",
+                right: "GGG",
+            }
+        },
+        {
+            NodeLink {
+                node: "DDD",
+                left: "DDD",
+                right: "DDD",
+            }
+        },
+        {
+            NodeLink {
+                node: "EEE",
+                left: "EEE",
+                right: "EEE",
+            }
+        },
+        {
+            NodeLink {
+                node: "GGG",
+                left: "GGG",
+                right: "GGG",
+            }
+        },
+        {
+            NodeLink {
+                node: "ZZZ",
+                left: "ZZZ",
+                right: "ZZZ",
+            }
+        },
     ],
 };
