@@ -76,3 +76,13 @@ pub const SAMPLE_DATA: Map<2, 7> = Map {
         },
     ],
 };
+
+pub const SAMPLE_DATA_2: Map<3, 3> = Map {
+    directions: [Direction::Left, Direction::Left, Direction::Right, ],
+
+    nodes: [
+        { NodeLink { node: "AAA", left: "BBB", right: "BBB" } },
+        { NodeLink { node: "BBB", left: "AAA", right: "ZZZ" } },
+        { NodeLink { node: "ZZZ", left: "ZZZ", right: "ZZZ" } },
+    ],
+};

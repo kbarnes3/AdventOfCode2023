@@ -1,9 +1,9 @@
 #[allow(unused_imports)]
-use day08_haunted_wasteland_common::{Direction, Map, NodeLink, END_NODE, SAMPLE_DATA, START_NODE};
+use day08_haunted_wasteland_common::{Direction, Map, NodeLink, END_NODE, SAMPLE_DATA, SAMPLE_DATA_2, START_NODE};
 use std::collections::HashMap;
 
 fn main() {
-    let result = do_work(SAMPLE_DATA);
+    let result = do_work(SAMPLE_DATA_2);
     println!("{}", result);
 }
 
