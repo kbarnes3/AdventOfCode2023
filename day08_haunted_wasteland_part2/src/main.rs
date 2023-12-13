@@ -2,10 +2,11 @@
 use day08_haunted_wasteland_common::{
     Direction, Map, NodeLink, END_SUFFIX, REAL_DATA, SAMPLE_DATA_3, START_SUFFIX,
 };
+use num::integer::lcm;
 use std::collections::HashMap;
 
 fn main() {
-    let result = do_work(SAMPLE_DATA_3);
+    let result = do_work(REAL_DATA);
     println!("{}", result);
 }
 
@@ -43,36 +44,42 @@ fn get_start_nodes<'a>(links: &HashMap<&'a str, Link>) -> Vec<&'a str> {
     start_nodes
 }
 
-fn are_all_nodes_done(nodes: &Vec<&str>) -> bool {
-    for node in nodes {
-        if !node.ends_with(END_SUFFIX) {
-            return false;
-        }
-    }
-    true
+fn is_node_done(node: &str) -> bool {
+    node.ends_with(END_SUFFIX)
 }
 
-fn find_ends<const D: usize>(directions: &[Direction; D], links: &HashMap<&str, Link>) -> u64 {
-    let mut current_nodes: Vec<&str> = get_start_nodes(links);
+fn find_path_length_to_end<const D: usize>(node: &str, directions: &[Direction; D], links: &HashMap<&str, Link>) -> u64 {
+    let mut current_node = node;
     let mut distance: u64 = 0;
 
-    while !are_all_nodes_done(&current_nodes) {
+    loop {
         for direction in directions {
-            for node in &mut current_nodes {
-                match direction {
-                    Direction::Left => {
-                        let link = links.get(node).unwrap();
-                        *node = link.left;
-                    }
-                    Direction::Right => {
-                        let link = links.get(node).unwrap();
-                        *node = link.right;
-                    }
-                }
+            if is_node_done(current_node) {
+                return distance;
             }
+
+            current_node = match direction {
+                Direction::Left => links.get(current_node).unwrap().left,
+                Direction::Right => links.get(current_node).unwrap().right,
+            };
+
             distance += 1;
         }
     }
+}
 
-    distance
+fn find_ends<const D: usize>(directions: &[Direction; D], links: &HashMap<&str, Link>) -> u64 {
+    let start_nodes: Vec<&str> = get_start_nodes(links);
+    let mut loop_lengths: Vec<u64> = Vec::with_capacity(start_nodes.len());
+    
+    for node in start_nodes {
+        loop_lengths.push(find_path_length_to_end(node, directions, links));
+    }
+
+    let mut total_length: u64 = 1;
+    for length in loop_lengths {
+        total_length = lcm(total_length, length);
+    }
+
+    total_length
 }

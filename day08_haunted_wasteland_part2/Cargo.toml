@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 day08_haunted_wasteland_common = { path = "../day08_haunted_wasteland_common" }
+num = "0.4.1"
