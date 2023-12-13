@@ -109,17 +109,65 @@ pub const SAMPLE_DATA_2: Map<3, 3> = Map {
 };
 
 pub const SAMPLE_DATA_3: Map<2, 8> = Map {
-    directions: [Direction::Left, Direction::Right, ],
+    directions: [Direction::Left, Direction::Right],
 
     nodes: [
-        { NodeLink { node: "11A", left: "11B", right: "XXX" } },
-        { NodeLink { node: "11B", left: "XXX", right: "11Z" } },
-        { NodeLink { node: "11Z", left: "11B", right: "XXX" } },
-        { NodeLink { node: "22A", left: "22B", right: "XXX" } },
-        { NodeLink { node: "22B", left: "22C", right: "22C" } },
-        { NodeLink { node: "22C", left: "22Z", right: "22Z" } },
-        { NodeLink { node: "22Z", left: "22B", right: "22B" } },
-        { NodeLink { node: "XXX", left: "XXX", right: "XXX" } },
+        {
+            NodeLink {
+                node: "11A",
+                left: "11B",
+                right: "XXX",
+            }
+        },
+        {
+            NodeLink {
+                node: "11B",
+                left: "XXX",
+                right: "11Z",
+            }
+        },
+        {
+            NodeLink {
+                node: "11Z",
+                left: "11B",
+                right: "XXX",
+            }
+        },
+        {
+            NodeLink {
+                node: "22A",
+                left: "22B",
+                right: "XXX",
+            }
+        },
+        {
+            NodeLink {
+                node: "22B",
+                left: "22C",
+                right: "22C",
+            }
+        },
+        {
+            NodeLink {
+                node: "22C",
+                left: "22Z",
+                right: "22Z",
+            }
+        },
+        {
+            NodeLink {
+                node: "22Z",
+                left: "22B",
+                right: "22B",
+            }
+        },
+        {
+            NodeLink {
+                node: "XXX",
+                left: "XXX",
+                right: "XXX",
+            }
+        },
     ],
 };
 

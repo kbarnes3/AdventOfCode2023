@@ -35,7 +35,7 @@ fn make_link_map<'a, const N: usize>(nodes: &[NodeLink<'a>; N]) -> HashMap<&'a s
 
 fn get_start_nodes<'a>(links: &HashMap<&'a str, Link>) -> Vec<&'a str> {
     let mut start_nodes: Vec<&str> = Vec::new();
-    for (node, _link) in links {
+    for node in links.keys() {
         if node.ends_with(START_SUFFIX) {
             start_nodes.push(node);
         }
