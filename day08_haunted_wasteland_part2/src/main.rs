@@ -1,17 +1,17 @@
 #[allow(unused_imports)]
 use day08_haunted_wasteland_common::{
-    Direction, Map, NodeLink, END_NODE, REAL_DATA, SAMPLE_DATA, SAMPLE_DATA_2, START_NODE,
+    Direction, Map, NodeLink, END_SUFFIX, REAL_DATA, SAMPLE_DATA_3, START_SUFFIX,
 };
 use std::collections::HashMap;
 
 fn main() {
-    let result = do_work(SAMPLE_DATA);
+    let result = do_work(SAMPLE_DATA_3);
     println!("{}", result);
 }
 
 fn do_work<const D: usize, const N: usize>(data: Map<D, N>) -> u64 {
     let links: HashMap<&str, Link> = make_link_map(&data.nodes);
-    find_end(&data.directions, &links)
+    find_ends(&data.directions, &links)
 }
 
 struct Link<'a> {
@@ -33,26 +33,46 @@ fn make_link_map<'a, const N: usize>(nodes: &[NodeLink<'a>; N]) -> HashMap<&'a s
     links
 }
 
-fn find_end<const D: usize>(directions: &[Direction; D], links: &HashMap<&str, Link>) -> u64 {
-    let mut current_node: &str = START_NODE;
+fn get_start_nodes<'a>(links: &HashMap<&'a str, Link>) -> Vec<&'a str> {
+    let mut start_nodes: Vec<&str> = Vec::new();
+    for (node, _link) in links {
+        if node.ends_with(START_SUFFIX) {
+            start_nodes.push(node);
+        }
+    }
+    start_nodes
+}
+
+fn are_all_nodes_done(nodes: &Vec<&str>) -> bool {
+    for node in nodes {
+        if !node.ends_with(END_SUFFIX) {
+            return false;
+        }
+    }
+    true
+}
+
+fn find_ends<const D: usize>(directions: &[Direction; D], links: &HashMap<&str, Link>) -> u64 {
+    let mut current_nodes: Vec<&str> = get_start_nodes(links);
     let mut distance: u64 = 0;
 
-    loop {
+    while !are_all_nodes_done(&current_nodes) {
         for direction in directions {
-            if current_node == END_NODE {
-                return distance;
-            }
-
-            let link: &Link = links.get(current_node).unwrap();
-            match direction {
-                Direction::Left => {
-                    current_node = link.left;
-                }
-                Direction::Right => {
-                    current_node = link.right;
+            for node in &mut current_nodes {
+                match direction {
+                    Direction::Left => {
+                        let link = links.get(node).unwrap();
+                        *node = link.left;
+                    }
+                    Direction::Right => {
+                        let link = links.get(node).unwrap();
+                        *node = link.right;
+                    }
                 }
             }
             distance += 1;
         }
     }
+
+    distance
 }
