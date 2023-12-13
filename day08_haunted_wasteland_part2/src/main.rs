@@ -48,7 +48,11 @@ fn is_node_done(node: &str) -> bool {
     node.ends_with(END_SUFFIX)
 }
 
-fn find_path_length_to_end<const D: usize>(node: &str, directions: &[Direction; D], links: &HashMap<&str, Link>) -> u64 {
+fn find_path_length_to_end<const D: usize>(
+    node: &str,
+    directions: &[Direction; D],
+    links: &HashMap<&str, Link>,
+) -> u64 {
     let mut current_node = node;
     let mut distance: u64 = 0;
 
@@ -71,7 +75,7 @@ fn find_path_length_to_end<const D: usize>(node: &str, directions: &[Direction; 
 fn find_ends<const D: usize>(directions: &[Direction; D], links: &HashMap<&str, Link>) -> u64 {
     let start_nodes: Vec<&str> = get_start_nodes(links);
     let mut loop_lengths: Vec<u64> = Vec::with_capacity(start_nodes.len());
-    
+
     for node in start_nodes {
         loop_lengths.push(find_path_length_to_end(node, directions, links));
     }
