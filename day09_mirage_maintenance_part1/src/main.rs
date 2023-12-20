@@ -17,7 +17,7 @@ fn do_work<const N: usize>(data: [&[u64]; N]) -> u64 {
 }
 
 fn predict_next_value(line: &[u64]) -> u64 {
-    let mut predictions : Vec<Vec<u64>> = Vec::new();
+    let mut predictions: Vec<Vec<u64>> = Vec::new();
     predictions.push(line.to_vec());
 
     while !contains_all_zeros(&predictions[predictions.len() - 1]) {
