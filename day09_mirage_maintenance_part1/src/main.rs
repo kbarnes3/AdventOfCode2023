@@ -1,12 +1,12 @@
 #[allow(unused_imports)]
-use day09_mirage_maintenance_common::SAMPLE_DATA;
+use day09_mirage_maintenance_common::{REAL_DATA, SAMPLE_DATA};
 
 fn main() {
-    let result = do_work(SAMPLE_DATA);
+    let result = do_work(REAL_DATA);
     println!("{}", result);
 }
 
-fn do_work<const N: usize>(data: [&[u64]; N]) -> u64 {
+fn do_work<const N: usize>(data: [&[i64]; N]) -> i64 {
     let mut result = 0;
 
     for line in data {
@@ -16,8 +16,8 @@ fn do_work<const N: usize>(data: [&[u64]; N]) -> u64 {
     result
 }
 
-fn predict_next_value(line: &[u64]) -> u64 {
-    let mut predictions: Vec<Vec<u64>> = Vec::new();
+fn predict_next_value(line: &[i64]) -> i64 {
+    let mut predictions: Vec<Vec<i64>> = Vec::new();
     predictions.push(line.to_vec());
 
     while !contains_all_zeros(&predictions[predictions.len() - 1]) {
@@ -37,7 +37,7 @@ fn predict_next_value(line: &[u64]) -> u64 {
     last_prediction
 }
 
-fn build_predictions(line: &Vec<u64>) -> Vec<u64> {
+fn build_predictions(line: &Vec<i64>) -> Vec<i64> {
     let mut result = Vec::new();
 
     if line.len() <= 1 {
@@ -53,7 +53,7 @@ fn build_predictions(line: &Vec<u64>) -> Vec<u64> {
     result
 }
 
-fn contains_all_zeros(line: &[u64]) -> bool {
+fn contains_all_zeros(line: &[i64]) -> bool {
     for value in line {
         if *value != 0 {
             return false;
